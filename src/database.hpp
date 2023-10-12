@@ -312,7 +312,7 @@ void MyDatabase::Menu::menu()
 //function for clearing screen
 void MyDatabase::clearScreen()
 {
-#if defined(_WIN32) || defined(_WIN64)
+#if _WIN32 || _WIN64
     system("cls");
 #else
     system("clear");
