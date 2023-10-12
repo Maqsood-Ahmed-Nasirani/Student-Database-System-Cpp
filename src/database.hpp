@@ -22,7 +22,11 @@ namespace MyDatabase {
         string age;
         string contact;
         string cnic;
+        string student_id;
         string student_password;
+        string gender;
+        string province;
+
 
     public:
         bool check_existing_acc(string &);
@@ -34,6 +38,7 @@ namespace MyDatabase {
         void save_user_details(void);
         void write_login_info(string &, string &);
         bool is_numeric(const string &);
+        void get_info_from_cnic(const string &);
     };
 
     class Menu : public Registration {
@@ -169,6 +174,8 @@ void MyDatabase::Registration::get_registration_details(void)
     cin >> age;
     cout << "Enter your contact no: ";
     cin >> contact;
+    cout << "Enter your student Id: ";
+    cin >> student_id;
 }
 
 //collect new user information
@@ -186,6 +193,7 @@ void MyDatabase::Registration::get_new_user_info(void)
     bool check_existing_cnic = check_existing_acc(cnic);
     if (!check_existing_cnic)
     {
+        get_info_from_cnic(cnic);
         set_registration_password();
         save_user_details();
     }
@@ -233,7 +241,7 @@ void MyDatabase::Registration::display_user_details(void)
 
     if (!cnic_found)
     {
-        cout << "Your account is not in our Database\n";
+        cout << "Your account is not present in our Database\n";
         return;
     }
 
@@ -258,12 +266,37 @@ void MyDatabase::Registration::display_user_details(void)
     userFile.close();
 }
 
+//function
+void MyDatabase::Registration::get_info_from_cnic(const string &cnic) {
+    
+    if (cnic[0] == 1) 
+        this->province = "KPK";
+    else if (cnic[0] == 2) 
+        this->province = "FATA";
+    else if (cnic[0] == 3) 
+        this->province = "Punjab";
+    else if (cnic[0] == 4) 
+        this->province = "Sindh";
+    else if(cnic[0] == 5)
+        this->province = "Balochistan";
+
+    //check if last cnic digit is odd then gender is male
+    if(cnic[12] & 1)
+        gender = "Male";
+    else    
+        gender = "Female"; //if even then gender is female
+}
+
+
 //save user information in admin.txt file
 void MyDatabase::Registration::save_user_details(void)
 {
     ofstream user(cnic);
     user << "Name:      " << name << endl;
+    user << "Std Id:    " << student_id << '\n';
     user << "Age:       " << age << endl;
+    user << "Gender:    " << gender << endl;
+    user << "Province:  " << province << endl;
     user << "Contact:   " << contact << endl;
     user << "CNIC:      " << cnic << endl;
     user << "Password:  " << student_password << endl;
@@ -278,7 +311,7 @@ void MyDatabase::Menu::menu()
     while (true)
     {
         cout << "\n--------------------------------------------------------------------------\n";
-        cout << "\t\t\t\tDATABASE MENU \n";
+        cout << "\t\t\t  DATABASE MENU \n";
         cout << "--------------------------------------------------------------------------\n";
         cout << "\n[1] for Input\n";
         cout << "[2] for display\n";
@@ -288,6 +321,7 @@ void MyDatabase::Menu::menu()
 
         if (choice == 0)
         {
+            clearScreen();
             cout << "\n\t[ Have a Good Day! <3 ]\n";
             break;
         }
@@ -312,11 +346,12 @@ void MyDatabase::Menu::menu()
 //function for clearing screen
 void MyDatabase::clearScreen()
 {
-#if _WIN32 || _WIN64
+#if defined(_WIN32)
     system("cls");
 #else
     system("clear");
 #endif
 }
+
 
 #endif
